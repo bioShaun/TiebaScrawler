@@ -21,28 +21,42 @@ class TitleSpider(scrapy.Spider):
         #     yield response.follow(next_page, callback=self.parse)
 
     def parse_post(self, response):
-        post_tieba = response.xpath('//a[@class="card_title_fname"]/text()').extract_first().strip()
-        post_title = response.xpath('//div[@class="core_title_wrap_bright clearfix"]//h3/@title').extract_first()
-        post_page = response.xpath('//span[@class="tP"]/text()').extract_first()
+        post_tieba = response.xpath(
+            '//a[@class="card_title_fname"]/text()').extract_first().strip()
+        post_title = response.xpath(
+            '//div[@class="core_title_wrap_bright clearfix"]//h3/@title'
+        ).extract_first()
+        post_page = response.xpath(
+            '//span[@class="tP"]/text()').extract_first()
         if post_page is None:
             post_page = '1'
-        for each_post in response.xpath('//div[@class="l_post l_post_bright j_l_post clearfix  "]'):
-            post_author = each_post.xpath('.//a[@class="p_author_name j_user_card"]/text()').extract_first()
-            post_position = each_post.xpath('.//span[@class="tail-info"]/text()').extract()[1].rstrip('楼')
-            post_time = each_post.xpath('.//span[@class="tail-info"]/text()').extract()[-1]
+        for each_post in response.xpath(
+                '//div[@class="l_post l_post_bright j_l_post clearfix  "]'
+        ):
+            post_author = each_post.xpath(
+                './/li[@class="d_name"]/a/text()').extract_first()
+            post_position = each_post.xpath(
+                './/span[@class="tail-info"]/text()').extract()[-2].rstrip('楼')
+            post_time = each_post.xpath(
+                './/span[@class="tail-info"]/text()').extract()[-1]
+            post_line = each_post.xpath(
+                './/div[@class="d_post_content j_d_post_content "]/text()'
+            ).extract_first().strip()
+            if not post_line:
+                continue
             poster_inf = PosterItem(
-                post_page = post_page,
-                post_title = post_title,
-                post_author = post_author,
-                post_time = post_time,
-                post_url = response.url,
-                post_position = post_position,
-                post_tieba = post_tieba
+                post_page=post_page,
+                post_title=post_title,
+                post_author=post_author,
+                post_time=post_time,
+                post_url=response.url,
+                post_position=post_position,
+                post_tieba=post_tieba,
+                post_line=post_line
             )
             yield poster_inf
 
-        if response.xpath('//li[@class="l_pager pager_theme_4 pb_list_pager"]//a').re('下一页'):
-            next_page = response.xpath('//li[@class="l_pager pager_theme_4 pb_list_pager"]//a/@href')[-2].extract()
-            yield response.follow(next_page, callback=self.parse_post)
-        
-        
+        # if response.xpath('//li[@class="l_pager pager_theme_4 pb_list_pager"]//a').re('下一页'):
+        #     next_page = response.xpath(
+        #         '//li[@class="l_pager pager_theme_4 pb_list_pager"]//a/@href')[-2].extract()
+        #     yield response.follow(next_page, callback=self.parse_post)

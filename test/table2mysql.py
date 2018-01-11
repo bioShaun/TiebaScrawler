@@ -1,6 +1,7 @@
 import pymysql
 import pandas as pd
 
+
 conn = pymysql.connect(
     host='127.0.0.1',
     user='lxgui',
@@ -31,7 +32,3 @@ for each in df.index:
 
 cur.close()
 conn.close()
-    
-    
-
-

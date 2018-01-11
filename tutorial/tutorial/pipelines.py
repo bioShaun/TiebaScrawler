@@ -7,30 +7,31 @@
 
 import pymysql
 
+
 class TutorialPipeline(object):
 
     def open_spider(self, spider):
         self.conn = pymysql.connect(
-                host='127.0.0.1',
-                user='lxgui',
-                passwd='123',
-                db='jx3',
-                charset="utf8",
-            
+            host='127.0.0.1',
+            user='lxgui',
+            passwd='123',
+            db='jx3',
+            charset="utf8",
         )
         self.cur = self.conn.cursor()
         self.cur.execute("USE jx3")
         self.database = 'jx_test'
         pass
-    
+
     def process_item(self, item, spider):
         sql = "INSERT INTO `{t.database}` \
         (`post_tieba`, `post_title`, `post_url`, `post_page`, \
-        `post_position`, `post_author`, `post_time`) \
-        VALUES (%s, %s, %s, %s, %s, %s, %s)".format(t=self)
-        self.cur.execute(sql, (item['post_tieba'], item['post_title'], item['post_url'],
-                               item['post_page'], item['post_position'], item['post_author'],
-                               item['post_time']))
+        `post_position`, `post_author`, `post_time`, `post_line`) \
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)".format(t=self)
+        self.cur.execute(sql, (item['post_tieba'], item['post_title'],
+                               item['post_url'], item['post_page'],
+                               item['post_position'], item['post_author'],
+                               item['post_time'], item['post_line']))
         self.conn.commit()
         return item
 

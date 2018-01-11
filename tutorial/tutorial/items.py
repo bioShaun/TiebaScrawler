@@ -22,4 +22,5 @@ class PosterItem(scrapy.Item):
     post_position = scrapy.Field()
     post_author = scrapy.Field()
     post_time = scrapy.Field()
+    post_line = scrapy.Field()
     pass
